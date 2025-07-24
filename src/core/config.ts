@@ -7,7 +7,7 @@ export const config = Effect.gen(function* () {
     smtp: {
       host: yield* Config.string("SMTP_HOST"),
       port: yield* Config.number("SMTP_PORT").pipe(Config.withDefault(587)),
-      user: yield* Config.string("SMTP_USER"),
+      user: yield* Config.string("SMTP_USERNAME"),
       pass: yield* Config.string("SMTP_PASSWORD"),
       fromName: yield* Config.string("SMTP_FROM_NAME"),
       fromEmail: yield* Config.string("SMTP_FROM_EMAIL"),
