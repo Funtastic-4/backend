@@ -1,9 +1,9 @@
 import { initConfig } from "../../src/core/config";
-import { Initialize } from "../../src/repository/postgres/db";
+import { initializeDatabase } from "../../src/repository/postgres/db";
 
 function main() {
   let config = initConfig();
-  let db = Initialize(config);
+  let db = initializeDatabase(config);
 }
 
 main();
