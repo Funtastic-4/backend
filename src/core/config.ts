@@ -1,27 +1,16 @@
-export type AppConfig = {
-  database_url: string;
-};
+import { Config, Effect } from "effect";
 
-export function initConfig(): AppConfig {
-  let config: AppConfig = {
-    database_url: Bun.env.DATABASE_URL ?? "",
+export const config = Effect.gen(function* () {
+  return {
+    port: yield* Config.number("PORT").pipe(Config.withDefault(8000)),
+    databaseUrl: yield* Config.string("DATABASE_URL"),
+    smtp: {
+      host: yield* Config.string("SMTP_HOST"),
+      port: yield* Config.number("SMTP_PORT").pipe(Config.withDefault(587)),
+      user: yield* Config.string("SMTP_USER"),
+      pass: yield* Config.string("SMTP_PASSWORD"),
+      fromName: yield* Config.string("SMTP_FROM_NAME"),
+      fromEmail: yield* Config.string("SMTP_FROM_EMAIL"),
+    },
   };
-
-  try {
-    validate(config);
-  } catch (e) {
-    throw e;
-  }
-
-  return config;
-}
-
-export function validate(config: AppConfig) {
-  for (let [key, value] of Object.entries(config)) {
-    if (!value) {
-      throw new Error(
-        `Invalid ${key} value, please check your environment variables;`,
-      );
-    }
-  }
-}
+});

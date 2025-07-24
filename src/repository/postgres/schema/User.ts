@@ -1,4 +1,5 @@
-import { integer, pgTable, varchar, text } from "drizzle-orm/pg-core";
+import { integer, pgTable, varchar, text, timestamp } from "drizzle-orm/pg-core";
+import { baseSchema } from "./Base";
 
 export const user = pgTable("user", {
   id: integer().primaryKey(),
@@ -20,7 +21,10 @@ export const user = pgTable("user", {
   name: varchar({
     length: 255,
   }).notNull(),
+  password: text().notNull(),
   profile_image_url: text(),
+  verify_at: timestamp(),
+  ...baseSchema,
 });
 
 export type SelectUser = typeof user.$inferSelect;

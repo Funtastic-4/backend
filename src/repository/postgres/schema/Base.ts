@@ -1,6 +1,6 @@
 import { integer, timestamp } from "drizzle-orm/pg-core";
 
-export const baseModel = {
+export const baseSchema = {
   created_by_id: integer(),
   updated_by_id: integer(),
   deleted_by_id: integer(),
