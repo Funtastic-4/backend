@@ -1,13 +1,43 @@
 import { Hono } from "hono";
 import { Effect } from "effect";
 import { config } from "@core/Config";
-import { LoggerLive } from "@core/Logger";
-import { BunSQLDatabase } from "@repository/postgres/Database";
+
 import { secureHeaders } from "hono/secure-headers";
+import { MainLayer } from "@core/Layer";
+import { CoreError, errorCodeToHttpStatus } from "@core/Error";
 
-const app = new Hono();
-app.use(secureHeaders())
+import authHandler from "@handler/Authentication";
 
+const app = new Hono().basePath("/api/v1");
+
+app.route("/auth", authHandler);
+
+app.use(secureHeaders());
+
+app.onError((err, c) => {
+  if (err instanceof CoreError) {
+    const status = errorCodeToHttpStatus[err.type];
+    return c.json(
+      {
+        error: {
+          type: err.type,
+          message: err.message,
+        },
+      },
+      status,
+    );
+  }
+
+  return c.json(
+    {
+      error: {
+        type: "internal_error",
+        message: "An unexpected error occurred",
+      },
+    },
+    500,
+  );
+});
 
 export const server = Effect.gen(function* () {
   const { port } = yield* config;
@@ -20,6 +50,4 @@ export const server = Effect.gen(function* () {
   };
 });
 
-export default Effect.runSync(
-  server.pipe(Effect.provide(LoggerLive), Effect.provide(BunSQLDatabase)),
-);
+export default Effect.runSync(server.pipe(Effect.provide(MainLayer)));

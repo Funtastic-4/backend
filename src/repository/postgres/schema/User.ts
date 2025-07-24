@@ -1,8 +1,8 @@
-import { integer, pgTable, varchar, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, varchar, text, timestamp, serial } from "drizzle-orm/pg-core";
 import { baseSchema } from "./Base";
 
 export const user = pgTable("user", {
-  id: integer().primaryKey(),
+  id: serial().primaryKey(),
   external_id: varchar({
     length: 12,
   })
