@@ -26,13 +26,26 @@ export const event = pgTable(
     end_date_time: timestamp().notNull(),
     location: text().notNull(),
     description: text().notNull(),
-    registration_fee: numeric({
-      precision: 10,
-      scale: 2,
-    }).notNull(),
+    registration_fee: integer(),
     volunteer_id: integer(),
     organization_id: integer(),
+    site_id: integer(),
     ...baseSchema,
   },
   (t) => [index("event_external_id_idx").on(t.external_id)],
+);
+
+export const event_to_user = pgTable(
+  "event_to_user",
+  {
+    id: serial().primaryKey(),
+    external_id: varchar({
+      length: 12,
+    })
+      .unique()
+      .notNull(),
+    event_id: integer().notNull(),
+    user_id: integer().notNull(),
+  },
+  (t) => [index("event_to_user_external_id_idx").on(t.external_id)],
 );

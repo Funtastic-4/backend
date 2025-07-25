@@ -7,6 +7,10 @@ import { MainLayer } from "@core/Layer";
 import { CoreError, errorCodeToHttpStatus, type ErrorCode } from "@core/Error";
 
 import authHandler from "@handler/Authentication";
+import volunteerRequestHandler from "@handler/VolunteerRequest";
+import organizationRequestHandler from "@handler/OrganizationRequest";
+import eventHandler from "@handler/Event";
+
 import { createSuccessResponse } from "@core/Responder";
 import { logger } from "hono/logger";
 
@@ -65,6 +69,9 @@ app.get("/healthcheck", (c) => {
 });
 
 app.route("/auth", authHandler);
+app.route("/volunteer-request", volunteerRequestHandler);
+app.route("/organization-request", organizationRequestHandler);
+app.route("/event", eventHandler);
 
 export const server = Effect.gen(function* () {
   const { port } = yield* config;

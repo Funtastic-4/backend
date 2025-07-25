@@ -22,6 +22,7 @@ export const volunteer_request = pgTable(
     institution: varchar({
       length: 255,
     }),
+    user_id: integer().notNull(),
     ...baseSchema,
   },
   (t) => [index("volunteer_request_external_id_idx").on(t.external_id)],

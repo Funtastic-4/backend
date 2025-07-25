@@ -21,6 +21,10 @@ export type CreateUserSpecification = {
   profile_image_url: string | undefined;
 };
 
+export type AuthUser = {
+  externalId: string;
+};
+
 export class IAuthenticationService extends Context.Tag(
   "AuthenticationService",
 )<

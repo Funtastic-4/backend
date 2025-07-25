@@ -1,6 +1,6 @@
 {
-  "id": "708c9ad5-243f-4403-9e02-9d316588ac24",
-  "prevId": "6f8aaa3a-5406-460c-be05-57a342fee3a2",
+  "id": "2478ae27-5f8d-4173-8d76-dbd9ee75e417",
+  "prevId": "4893b53d-fc68-42f9-a54b-22e1e59aefb8",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -52,9 +52,9 @@
         },
         "registration_fee": {
           "name": "registration_fee",
-          "type": "numeric(10, 2)",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "volunteer_id": {
           "name": "volunteer_id",
@@ -64,6 +64,12 @@
         },
         "organization_id": {
           "name": "organization_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "site_id": {
+          "name": "site_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -129,6 +135,67 @@
       "uniqueConstraints": {
         "event_external_id_unique": {
           "name": "event_external_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "external_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.event_to_user": {
+      "name": "event_to_user",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "external_id": {
+          "name": "external_id",
+          "type": "varchar(12)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "event_to_user_external_id_idx": {
+          "name": "event_to_user_external_id_idx",
+          "columns": [
+            {
+              "expression": "external_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "event_to_user_external_id_unique": {
+          "name": "event_to_user_external_id_unique",
           "nullsNotDistinct": false,
           "columns": [
             "external_id"
@@ -1014,6 +1081,24 @@
         "external_id": {
           "name": "external_id",
           "type": "varchar(12)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reason": {
+          "name": "reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "institution": {
+          "name": "institution",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
