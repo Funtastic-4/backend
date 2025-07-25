@@ -1,5 +1,5 @@
 import { IAuthenticationService } from "@core/Authentication";
-import { CoreError, CoreErrorConstructors, CoreErrors } from "@core/Error";
+import { CoreError, CoreErrorConstructors } from "@core/Error";
 import { Hashing } from "@core/Hashing";
 import { IUserRepository } from "@core/User";
 import { Effect, Layer } from "effect";
@@ -13,9 +13,9 @@ export const AuthenticationService = Layer.effect(
     return {
       login(specification) {
         return Effect.gen(function* () {
-          const storedUser = yield* userRepository.getByEmail(
-            specification.email,
-          );
+          const storedUser = yield* userRepository
+            .getByEmail(specification.email)
+            .pipe(Effect.catchAll((e) => Effect.fail(e)));
 
           const isValidPassword = yield* hashingService
             .verify(storedUser.password || "", specification.password)
@@ -29,7 +29,7 @@ export const AuthenticationService = Layer.effect(
             );
 
           if (!isValidPassword) {
-            return yield* CoreErrors.validation(
+            return yield* CoreErrorConstructors.validation(
               "Invalid credentials",
               "email or password",
             );
@@ -52,7 +52,10 @@ export const AuthenticationService = Layer.effect(
             );
 
           if (existingUserByEmail) {
-            return yield* CoreErrors.validation("email", "already exists");
+            return yield* CoreErrorConstructors.validation(
+              "email",
+              "already exists",
+            );
           }
 
           const existingUserByPhone = yield* userRepository
@@ -67,7 +70,7 @@ export const AuthenticationService = Layer.effect(
             );
 
           if (existingUserByPhone) {
-            return yield* CoreErrors.validation(
+            return yield* CoreErrorConstructors.validation(
               "phone_number",
               "already exists",
             );

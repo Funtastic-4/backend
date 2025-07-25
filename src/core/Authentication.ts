@@ -32,4 +32,3 @@ export class IAuthenticationService extends Context.Tag(
     ): Effect.Effect<User, CoreError>;
   }
 >() {}
-

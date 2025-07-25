@@ -8,6 +8,7 @@ import { Layer } from "effect";
 
 export const DatabaseLayer = BunSQLDatabase;
 export const UtilityLayers = Layer.mergeAll(Argon2Hashing, NanoIdGenerator);
+
 export const RepositoryLayer = PostgresUserRepository.pipe(
   Layer.provide(DatabaseLayer),
   Layer.provide(UtilityLayers),

@@ -4,40 +4,67 @@ import { config } from "@core/Config";
 
 import { secureHeaders } from "hono/secure-headers";
 import { MainLayer } from "@core/Layer";
-import { CoreError, errorCodeToHttpStatus } from "@core/Error";
+import { CoreError, errorCodeToHttpStatus, type ErrorCode } from "@core/Error";
 
 import authHandler from "@handler/Authentication";
+import { createSuccessResponse } from "@core/Responder";
+import { logger } from "hono/logger";
 
 const app = new Hono().basePath("/api/v1");
-
-app.route("/auth", authHandler);
-
 app.use(secureHeaders());
+app.use(logger());
 
 app.onError((err, c) => {
-  if (err instanceof CoreError) {
-    const status = errorCodeToHttpStatus[err.type];
-    return c.json(
-      {
-        error: {
-          type: err.type,
-          message: err.message,
-        },
-      },
-      status,
-    );
+  console.log(err);
+  let type: ErrorCode = "internal_error";
+  let message = "Internal server error";
+
+  const castedErr = err as CoreError;
+
+  if (castedErr.type) {
+    type = castedErr.type;
+    message = castedErr.message;
   }
+
+  const coreError = new CoreError({
+    message,
+    type,
+  });
+
+  const status = errorCodeToHttpStatus[coreError.type];
 
   return c.json(
     {
+      code: status,
+      success: false,
+      message: coreError.message,
       error: {
-        type: "internal_error",
-        message: "An unexpected error occurred",
+        type: coreError.type,
       },
     },
-    500,
+    status,
   );
 });
+
+app.notFound((c) => {
+  return c.json(
+    {
+      code: 404,
+      success: false,
+      error: {
+        type: "not_found",
+        message: "Not found",
+      },
+    },
+    404,
+  );
+});
+
+app.get("/healthcheck", (c) => {
+  return c.json(createSuccessResponse(undefined, "Service is running...", 200));
+});
+
+app.route("/auth", authHandler);
 
 export const server = Effect.gen(function* () {
   const { port } = yield* config;

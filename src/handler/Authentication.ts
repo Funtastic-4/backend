@@ -2,7 +2,7 @@ import { effectValidator } from "@hono/effect-validator";
 import { Hono } from "hono";
 import * as Schema from "effect/Schema";
 import * as v from "valibot";
-import { CoreErrors } from "@core/Error";
+import { CoreErrorConstructors } from "@core/Error";
 import { createSuccessResponse } from "@core/Responder";
 import { Effect } from "effect";
 import { ServiceLayer } from "@core/Layer";
@@ -32,7 +32,7 @@ app.post(
     let validatedBody = c.req.valid("json");
     let isEmailValid = v.safeParse(EmailSchema, validatedBody.email);
     if (!isEmailValid.success) {
-      throw CoreErrors.validation("email", "Invalid email format");
+      throw CoreErrorConstructors.validation("email", "Invalid email format");
     }
 
     const result = await Effect.runPromise(
@@ -40,7 +40,13 @@ app.post(
         let authenticationService = yield* IAuthenticationService;
         const user = yield* authenticationService.login(validatedBody);
         return user;
-      }).pipe(Effect.provide(ServiceLayer)),
+      })
+        .pipe(
+          Effect.catchAll((e) => {
+            return e;
+          }),
+        )
+        .pipe(Effect.provide(ServiceLayer)),
     );
 
     return c.json(createSuccessResponse(result, "Login successful", 200));
@@ -54,7 +60,7 @@ app.post(
     const validatedBody = c.req.valid("json");
     let isEmailValid = v.safeParse(EmailSchema, validatedBody.email);
     if (!isEmailValid.success) {
-      throw CoreErrors.validation("email", "Invalid email format");
+      throw CoreErrorConstructors.validation("email", "Invalid email format");
     }
 
     const result = await Effect.runPromise(

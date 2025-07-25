@@ -3,7 +3,7 @@ import { Effect, Layer } from "effect";
 import { PostgresDatabase } from "./Database";
 import { user } from "./schema/User";
 import { and, eq, isNull } from "drizzle-orm";
-import { CoreErrorConstructors, CoreErrors } from "@core/Error";
+import { CoreErrorConstructors } from "@core/Error";
 import { IdGenerator } from "@core/IdGenerator";
 
 export const PostgresUserRepository = Layer.effect(
@@ -29,7 +29,7 @@ export const PostgresUserRepository = Layer.effect(
           });
 
           if (!result[0]) {
-            return yield* CoreErrors.notFound("user", id);
+            return yield* CoreErrorConstructors.notFound("user", id);
           }
           return result[0] as User;
         });
@@ -51,7 +51,7 @@ export const PostgresUserRepository = Layer.effect(
           });
 
           if (!result[0]) {
-            return yield* CoreErrors.notFound("user", email);
+            return yield* CoreErrorConstructors.notFound("user", email);
           }
 
           return result[0] as User;
@@ -79,7 +79,7 @@ export const PostgresUserRepository = Layer.effect(
           });
 
           if (!result[0]) {
-            return yield* CoreErrors.notFound("user", phoneNumber);
+            return yield* CoreErrorConstructors.notFound("user", phoneNumber);
           }
 
           return result[0] as User;
@@ -107,7 +107,7 @@ export const PostgresUserRepository = Layer.effect(
           });
 
           if (!result[0]) {
-            return yield* CoreErrors.notFound("user", externalId);
+            return yield* CoreErrorConstructors.notFound("user", externalId);
           }
 
           return result[0] as User;
@@ -145,7 +145,7 @@ export const PostgresUserRepository = Layer.effect(
           });
 
           if (!result[0]) {
-            return yield* CoreErrors.database(
+            return yield* CoreErrorConstructors.database(
               "Failed to insert user - no result returned",
             );
           }
